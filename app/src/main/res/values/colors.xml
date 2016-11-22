@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="mainColor">#8c9b34</color>
+
+
+    <color name="colorPrimary">@color/mainColor</color>
+    <color name="colorPrimaryDark">#6d8214</color>
+    <color name="colorAccent">#7f8922</color>
+
+    <!-- colorBg -->
+    <color name="menuBg">#ff828a3c</color>
+    <color name="groupBg">#ffb9c455</color>
+    <color name="userBg">#ff7f8922</color>
+    <color name="downSheetBg">#ffeaeaea</color>
+
+    <!-- colorText -->
+    <color name="whiteText">#ffffffff</color>
+    <color name="darkGrayText">#ff474746</color>
+    <color name="blackText">#ff000000</color>
+
+    <!--colorBtn-->
+    <color name="startPoint">#fff96a53</color>
+    <color name="routePoint">#ffd8bc35</color>
+    <color name="endPoint">#ff4275e5</color>
+    <color name="basicBtn">@color/mainColor</color>
+</resources>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="1">
+
+        <include layout="@layout/toolbar"/>
+
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/linnear1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp">
+
+                <EditText
+                    android:layout_width="fill_parent"
+                    android:layout_height="40dp"
+                    android:id="@+id/email_input"
+                    android:hint="이름"
+                    android:paddingLeft="20dp"
+                    android:backgroundTint="#A7A9AC" />
+
+                <EditText
+                    android:layout_width="fill_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="13dp"
+                    android:id="@+id/password_input"
+                    android:paddingLeft="20dp"
+                    android:hint="비밀번호"
+                    android:inputType="textPassword"
+                    android:backgroundTint="#A7A9AC"
+                    android:layout_below="@+id/password_input" />
+
+
+                <Button
+                    android:layout_width="fill_parent"
+                    android:layout_height="50dp"
+                    android:text="로그인"
+                    android:textSize="15dp"
+                    android:textColor="#fff"
+                    android:id="@+id/login_join_member_btn"
+                    android:background="@drawable/rounded_btncolor"
+                    android:layout_marginTop="30dp"
+                    android:backgroundTint="#1A806A" />
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:gravity="center_vertical"
+                    android:layout_below="@+id/login_join_member_btn"
+                    android:weightSum="10"
+                    android:id="@+id/linear3">
+
+                    <!--
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="2dp"
+                        android:background="#19000000"
+                        android:layout_weight="5"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="또는"
+                        android:textSize="15sp"
+                        />
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="2dp"
+                        android:background="#19000000"
+                        android:layout_weight="5"/>
+                        -->
+
+                </LinearLayout>
+
+
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+</LinearLayout>
