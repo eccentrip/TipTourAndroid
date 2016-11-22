@@ -3,8 +3,12 @@ package mountainq.helloegg.tiptourguide;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import mountainq.helloegg.tiptourguide.activities.NavigationDrawerActivity;
 import mountainq.helloegg.tiptourguide.data.StaticData;
@@ -23,6 +27,11 @@ public class MainActivity extends NavigationDrawerActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         onMenuClickListener(findViewById(R.id.g1_menu1));
+        FirebaseMessaging.getInstance().subscribeToTopic("tiptour");
+        String msg = "msg_subscribe";
+        Log.d("Test", msg);
+        String token = FirebaseInstanceId.getInstance().getToken();
+        Log.d("Test", "token = " + token);
     }
 
 

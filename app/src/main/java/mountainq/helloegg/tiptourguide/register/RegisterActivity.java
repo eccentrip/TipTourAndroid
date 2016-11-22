@@ -28,6 +28,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText password_confirm;
     private NetworkService networkService;
     private ApplicationController app;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -48,12 +49,9 @@ public class RegisterActivity extends AppCompatActivity {
         btnRegister.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
 
-
                 String name = email_input.getText().toString().trim();
                 String password = password_input.getText().toString().trim();
                 String password_check = password_confirm.getText().toString().trim();
-
-
 
                if (!name.isEmpty() && !password.isEmpty() && !password_check.isEmpty()) {
 
@@ -101,7 +99,7 @@ public class RegisterActivity extends AppCompatActivity {
                        Toast.makeText(getApplicationContext(),
                                "비밀번호가 일치하지 않습니다! 다시 입력해 주세요!", Toast.LENGTH_LONG)
                                .show();
-                       return ;
+                       return;
                    }
                 } else {
                     Toast.makeText(getApplicationContext(),
@@ -109,11 +107,6 @@ public class RegisterActivity extends AppCompatActivity {
                             .show();
                    return ;
                 }
-
-
-
-
-
             }
         });
 

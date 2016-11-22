@@ -27,6 +27,7 @@ public class TipTourFirebaseInstanceIDService extends FirebaseInstanceIdService 
         //Get updated InstanceID Token.
         // only First time can get token another you can't see token,
         // If you didn't see your token, i recommend delete and reinstall your app
+
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
         Log.d(TAG, "Refreshed token : " + refreshedToken);
         app = (ApplicationController) getApplicationContext();
