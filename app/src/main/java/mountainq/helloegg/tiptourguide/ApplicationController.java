@@ -1,8 +1,6 @@
 package mountainq.helloegg.tiptourguide;
 
 import android.app.Application;
-import android.content.Context;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -68,7 +66,6 @@ public class ApplicationController extends Application {
         this.buildService();
 
         mData.setDisplayPixels(getApplicationContext());
-        final TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
         deviceid = UUID.randomUUID().toString();
 
     }

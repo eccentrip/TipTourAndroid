@@ -1,8 +1,9 @@
 package mountainq.helloegg.tiptourguide.register;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -41,8 +42,7 @@ public class RegisterActivity extends AppCompatActivity {
         password_input = (EditText) findViewById(R.id.password_register);
         btnRegister = (Button) findViewById(R.id.login_join_member_btn);
         password_confirm= (EditText) findViewById(R.id.password_confirm);
-        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.action_bar_register);
+
 
 
         // Register Button Click event
@@ -113,6 +113,29 @@ public class RegisterActivity extends AppCompatActivity {
         // Link to Login Screen
 
 
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle("알림")
+                .setMessage("지금 종료하시겠습니까?")
+                .setCancelable(false)
+                .setPositiveButton("종료", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        RegisterActivity.super.onBackPressed();
+                    }
+                })
+                .setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create();
+        dialog.show();
     }
 }
 
