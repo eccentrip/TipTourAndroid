@@ -12,7 +12,7 @@ import android.widget.TextView;
 import mountainq.helloegg.tiptourguide.ApplicationController;
 import mountainq.helloegg.tiptourguide.R;
 import mountainq.helloegg.tiptourguide.activities.FChildActivity;
-import mountainq.helloegg.tiptourguide.data.Content;
+import mountainq.helloegg.tiptourguide.data.User;
 import mountainq.helloegg.tiptourguide.interfaces.NetworkService;
 
 
@@ -21,6 +21,7 @@ import mountainq.helloegg.tiptourguide.interfaces.NetworkService;
  */
 
 public class Fragment2_GuideSettings extends FChildActivity {
+
 
     TextView guideSetText;
     Switch guideSetSwitch;
@@ -49,7 +50,7 @@ public class Fragment2_GuideSettings extends FChildActivity {
     }
 
     private void sendData(boolean isChecked){
-        Content content = new Content();
+        User content = new User();
 
         if(isChecked){
 

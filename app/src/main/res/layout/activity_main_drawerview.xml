@@ -45,7 +45,7 @@
         <TextView style="@style/menuText"
             android:onClick="onMenuClickListener"
             android:id="@+id/g2_menu1"
-            android:text="@string/g1_menu1"/>
+            android:text="@string/g2_menu1"/>
     </LinearLayout>
 
     <LinearLayout style="@style/menuLayout">

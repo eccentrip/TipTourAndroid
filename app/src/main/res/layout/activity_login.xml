@@ -28,9 +28,9 @@
                 android:layout_marginRight="25dp">
 
                 <EditText
-                    android:layout_width="fill_parent"
+                    android:layout_width="match_parent"
                     android:layout_height="40dp"
-                    android:id="@+id/email_input"
+                    android:id="@+id/name_input"
                     android:hint="이름"
                     android:paddingLeft="20dp"
                     android:backgroundTint="#A7A9AC" />
@@ -98,10 +98,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
+                <Button
+                    android:visibility="gone"
+                    android:onClick="setNotification"
+                    android:id="@+id/notification"
+                    android:text="버튼"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
             </LinearLayout>
-
-
         </LinearLayout>
+
 
 
     </LinearLayout>

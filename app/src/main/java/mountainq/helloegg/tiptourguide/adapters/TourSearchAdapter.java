@@ -1,6 +1,7 @@
 package mountainq.helloegg.tiptourguide.adapters;
 
 import android.content.Context;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -68,6 +69,7 @@ public class TourSearchAdapter extends BaseAdapter/** implements Filterable*/ {
 
         LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mData.getHeight()/10);
         holder.itembg.setLayoutParams(llp);
+        holder.itembg.setGravity(Gravity.CENTER);
         /**
          * 홀더의 내용으로 꾸미기
          */

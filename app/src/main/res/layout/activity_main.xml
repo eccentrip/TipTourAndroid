@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="false"
-    tools:context="com.example.cholmink.tiptour_login.MainActivity">
+    tools:context=".MainActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -32,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <include layout="@layout/toolbar" />
-            <include layout="@layout/activity_main_mainview" />
+            <include layout="@layout/fragment_tourselection" />
         </LinearLayout>
 
         <!-- drawer view -->

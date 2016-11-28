@@ -38,11 +38,14 @@ public class StaticData {
         return height;
     }
 
-    public static final String SERVICE_KEY = "kKxwGFgF3Nl%2FYmNPy7fLIoEbzMhhtrH1THy1IvcHm6yxia1I%2BhtyivenbGNWHGYanSNrtSXioCZpBdUlZkNW4Q%3D%3D";
-    public static final String MOBILE_OS = "AND";
-    public static final String CONTENT_TYPE_ID = "12";
-    public static final String APP_NAME = "tiptour_guide";
 
+    private static final String SERVICE_KEY = "kKxwGFgF3Nl%2FYmNPy7fLIoEbzMhhtrH1THy1IvcHm6yxia1I%2BhtyivenbGNWHGYanSNrtSXioCZpBdUlZkNW4Q%3D%3D";
+    private static final String MOBILE_OS = "AND";
+    private static final String CONTENT_TYPE_ID = "12";
+    private static final String APP_NAME = "tiptour_guide";
+
+    public static final String TOUR_API_SEARCH_URL = "http://api.visitkorea.or.kr/openapi/service/rest/KorService/searchKeyword?ServiceKey="+SERVICE_KEY+"&MobileOS="+MOBILE_OS+"&MobileApp="+APP_NAME+"&ContentTypeId="+CONTENT_TYPE_ID+"&keyword=";
+    public static final String TMAP_API_KEY = "52141bc0-08fa-3309-af84-0cfc120c0101";
     public Typeface font1;
     public Typeface font2;
 
@@ -50,7 +53,28 @@ public class StaticData {
     public static final int WHITE_TEXT_COLOR = 0xffffffff;
 
 
+    /**
+     * 푸시 구분 데이터
+     */
+    public static final String GUIDE = "200";
+    public static final String CUSTOMER_YES = "300";
+    public static final String CUSTOMER_NO = "400";
 
 
+    /**
+     * DummyData
+     */
+    public static final double DUMMY_LON = 37.568477;
+    public static final double DUMMY_LAT = 126.981611;
 
+    /**
+     * 보내야 될 데이터 잠시 저장
+     */
+    private PushDatas tempPushDatas = null;
+        public PushDatas getTempPushDatas() {
+            return tempPushDatas;
+        }
+        public void setTempPushDatas(PushDatas tempPushDatas) {
+            this.tempPushDatas = tempPushDatas;
+        }
 }

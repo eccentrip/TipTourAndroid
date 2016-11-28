@@ -7,9 +7,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.ArrayList;
 
-import mountainq.helloegg.tiptourguide.data.Dummy;
 import mountainq.helloegg.tiptourguide.data.SearchKeyword;
-import mountainq.helloegg.tiptourguide.data.TourItem;
 
 /**
  * Created by dnay2 on 2016-11-20.
@@ -17,9 +15,7 @@ import mountainq.helloegg.tiptourguide.data.TourItem;
 
 public class SearchKeywordHandler extends DefaultHandler {
 
-    private TourItem tourItem;
     private ArrayList<SearchKeyword> items = new ArrayList<>();
-    private Dummy dummy;
     private SearchKeyword item;
     private String tagName = "";
 

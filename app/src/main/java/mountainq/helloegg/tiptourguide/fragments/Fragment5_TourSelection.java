@@ -1,5 +1,6 @@
 package mountainq.helloegg.tiptourguide.fragments;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -15,10 +16,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -45,7 +47,6 @@ import mountainq.helloegg.tiptourguide.data.SearchKeyword;
 import mountainq.helloegg.tiptourguide.data.StaticData;
 import mountainq.helloegg.tiptourguide.data.TourBoxItem;
 import mountainq.helloegg.tiptourguide.interfaces.NetworkService;
-import mountainq.helloegg.tiptourguide.interfaces.TourAPIService;
 import mountainq.helloegg.tiptourguide.parsers.SearchKeySAXParser;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -53,6 +54,7 @@ import retrofit2.Response;
 
 /**
  * Created by dnay2 on 2016-11-17.
+ *
  */
 
 public class Fragment5_TourSelection extends FChildActivity implements TMapGpsManager.onLocationChangedCallback {
@@ -60,9 +62,8 @@ public class Fragment5_TourSelection extends FChildActivity implements TMapGpsMa
     private StaticData mData = StaticData.getInstance();
     private ListView searchList;
     private TMapView tMapView;
-
     private EditText searchEt;
-    private ImageButton searchBtn;
+    private ImageView searchBtn;
     private RelativeLayout bottomSheet;
     private TextView startPointText, endPointText, timeText, distanceText, costText;
     private Button saveBtn;
@@ -73,7 +74,6 @@ public class Fragment5_TourSelection extends FChildActivity implements TMapGpsMa
     private TourSearchAdapter searchAdapter;
 
     ApplicationController app;
-    TourAPIService tourAPIService;
 
     TMapGpsManager gps = null;
 
@@ -109,6 +109,7 @@ public class Fragment5_TourSelection extends FChildActivity implements TMapGpsMa
         RelativeLayout.LayoutParams llp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mData.getHeight() / 7);
         bottomSheet = (RelativeLayout) v.findViewById(R.id.bottom);
         bottomSheet.setLayoutParams(llp);
+
         saveBtn = (Button) v.findViewById(R.id.saveBtn);
         saveBtn.setOnClickListener(onSaveBtnClickListener);
 
@@ -120,12 +121,12 @@ public class Fragment5_TourSelection extends FChildActivity implements TMapGpsMa
 
         tMapLayout = (RelativeLayout) v.findViewById(R.id.relative_map);
 
-        tMapView = createTmap(v);
+        new TmapTask().execute();
+
         searchList = (ListView) v.findViewById(R.id.searchlist);
         searchEt = (EditText) v.findViewById(R.id.searchet);
-        searchBtn = (ImageButton) v.findViewById(R.id.searchbtn);
+        searchBtn = (ImageView) v.findViewById(R.id.searchbtn);
 
-        tourAPIService = app.getTourAPIService();
         searchEt.addTextChangedListener(searchEditTextWatcher);
         searchAdapter = new TourSearchAdapter(items, app.getApplicationContext());
         searchBtn.setOnClickListener(searchBtnClickListener);
@@ -146,13 +147,13 @@ public class Fragment5_TourSelection extends FChildActivity implements TMapGpsMa
         lon = location.getLongitude();
     }
 
-    private TMapView createTmap(View v) {
-        TMapView tMapView = null;
-        try {
-            tMapView = new TMapView(app.getApplicationContext());
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
+    /**
+     * 최초 티맵을 만드는 메소드
+     */
+    private void createTmap() {
+
+        tMapView = new TMapView(app.getApplicationContext());
+
         if (tMapView != null) {
             tMapView.setSKPMapApiKey("52141bc0-08fa-3309-af84-0cfc120c0101");
             tMapView.setLanguage(TMapView.LANGUAGE_KOREAN);
@@ -163,11 +164,17 @@ public class Fragment5_TourSelection extends FChildActivity implements TMapGpsMa
             tMapView.setTrackingMode(true);
             tMapLayout.addView(tMapView);
         }
-        return tMapView;
+
     }
 
     double distance = 0.0;
 
+    /**
+     * 두 지점을 연결해서 길로 이어주는 메소드
+     * @param start 시작점
+     * @param end 끝점
+     * @return 길이가 반환된다.
+     */
     private double drawStratToEnd(SearchKeyword start, SearchKeyword end) {
         double startX = start.getMapx();
         double startY = start.getMapy();
@@ -189,6 +196,10 @@ public class Fragment5_TourSelection extends FChildActivity implements TMapGpsMa
         return distance;
     }
 
+    /**
+     * 점을 찍어서 위치를 보여주는 메소드
+     * @param point 지점을 넣는다.
+     */
     private void drawPoint(SearchKeyword point) {
         TMapPoint tMapPoint = new TMapPoint(point.getMapy(), point.getMapx());
         TMapMarkerItem marker = new TMapMarkerItem();
@@ -199,14 +210,14 @@ public class Fragment5_TourSelection extends FChildActivity implements TMapGpsMa
 
     /**
      * 검색을 할때 리스트가 보이게 함
+     *
+     * 검색어를 입력하는 순간 상단에 검색창이 바뀜
      */
     private TextWatcher searchEditTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             searchEt.setBackgroundColor(StaticData.WHITE_TEXT_COLOR);
             searchEt.setTextColor(0xff000000);
-            bottomSheet.startAnimation(down);
-            bottomSheet.setVisibility(View.GONE);
         }
 
         @Override
@@ -216,7 +227,7 @@ public class Fragment5_TourSelection extends FChildActivity implements TMapGpsMa
 
         @Override
         public void afterTextChanged(Editable s) {
-
+            hideBottomSheet();
         }
     };
 
@@ -227,6 +238,7 @@ public class Fragment5_TourSelection extends FChildActivity implements TMapGpsMa
             return false;
         }
     };
+
 
     private void showTmap() {
         tMapLayout.setVisibility(View.VISIBLE);
@@ -254,10 +266,8 @@ public class Fragment5_TourSelection extends FChildActivity implements TMapGpsMa
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             showTmap();
-            bottomSheet.setAnimation(up);
-            bottomSheet.setVisibility(View.VISIBLE);
+            showBottomSheet();
             startPointText.setText("내위치");
-
             startPoint = new SearchKeyword(/*String.valueOf(lon), String.valueOf(lat),*/"37.568477", "126.981611", "내 위치");
             endPoint = new SearchKeyword(items.get(position));
             drawStratToEnd(startPoint, endPoint);
@@ -266,25 +276,18 @@ public class Fragment5_TourSelection extends FChildActivity implements TMapGpsMa
             distanceText.setText(String.valueOf(((int) distance)));
             costText.setText(String.valueOf(((int) distance * 1.3)));
 
-//            if(isFirst){
-//                bottomSheet.setAnimation(up);
-//                bottomSheet.setVisibility(View.VISIBLE);
-//                SearchKeyword tmp = items.get(position);
-//                startPoint = new SearchKeyword(tmp);
-//                startPointText.setText("내위치");
-//                isFirst= false;
-//            }else {
-//                SearchKeyword tmp = items.get(position);
-//                endPoint = new SearchKeyword(tmp);
-//                drawStratToEnd(startPoint, endPoint);
-//                endPointText.setText(endPoint.getTitle());
-//                timeText.setText(String.valueOf(((int)distance/1.2)));
-//                distanceText.setText(String.valueOf(((int)distance)));
-//                costText.setText(String.valueOf(((int)distance *1.3)));
-//            }
-
         }
     };
+
+    private void showBottomSheet(){
+        bottomSheet.startAnimation(up);
+        bottomSheet.setVisibility(View.VISIBLE);
+    }
+
+    private void hideBottomSheet(){
+        bottomSheet.startAnimation(down);
+        bottomSheet.setVisibility(View.GONE);
+    }
 
     private View.OnClickListener onSaveBtnClickListener = new View.OnClickListener() {
         @Override
@@ -292,7 +295,7 @@ public class Fragment5_TourSelection extends FChildActivity implements TMapGpsMa
 
             AlertDialog dialog = new AlertDialog.Builder(getActivity())
                     .setTitle("알림")
-                    .setMessage("저장하시겠습니까?")
+                    .setMessage("연결하시겠습니까?")
                     .setPositiveButton("저장", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -310,6 +313,15 @@ public class Fragment5_TourSelection extends FChildActivity implements TMapGpsMa
         }
     };
 
+
+    private void ConnectTourGuide(){
+
+    }
+
+
+    /**
+     * 만든 하나의 트립을 저장하는 메소드
+     */
     private void SaveNewTrip() {
         NetworkService networkService = app.getNetworkService();
         TourBoxItem item = new TourBoxItem(
@@ -334,11 +346,33 @@ public class Fragment5_TourSelection extends FChildActivity implements TMapGpsMa
         });
     }
 
+
     /**
-     * 데이터 통신
+     * 티맵아 좀 되라
+     */
+    class TmapTask extends AsyncTask<Void, Void, Void>{
+        int cnt = 0;
+        @Override
+        protected Void doInBackground(Void... params) {
+            while(tMapView == null && cnt < 10) {
+                publishProgress();
+                cnt++;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            createTmap();
+            Log.d("Test", "돌자");
+        }
+    }
+
+    /**
+     * 데이터 통신 관광 API로부터 관광지 정보를 받아와 리스트로 출력한다.
      */
     class SearchTask extends AsyncTask<String, Integer, Void> {
-        private static final String baseUrl = "http://api.visitkorea.or.kr/openapi/service/rest/KorService/searchKeyword?ServiceKey=kKxwGFgF3Nl%2FYmNPy7fLIoEbzMhhtrH1THy1IvcHm6yxia1I%2BhtyivenbGNWHGYanSNrtSXioCZpBdUlZkNW4Q%3D%3D&MobileOS=AND&MobileApp=AppTesting&ContentTypeId=12&keyword=";
+
         private URL url = null;
         HttpURLConnection connection = null;
 
@@ -352,7 +386,7 @@ public class Fragment5_TourSelection extends FChildActivity implements TMapGpsMa
             }
 
             try {
-                url = new URL(baseUrl + keyword);
+                url = new URL(StaticData.TOUR_API_SEARCH_URL + keyword);
                 connection = (HttpURLConnection) url.openConnection();
                 int code = connection.getResponseCode();
                 switch (code) {
@@ -363,7 +397,10 @@ public class Fragment5_TourSelection extends FChildActivity implements TMapGpsMa
                     default:
                         break;
                 }
-            } catch (Exception e) {
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+                Log.d("test", connection.getErrorStream().toString());
+            } catch (Exception e){
                 e.printStackTrace();
             }
 
@@ -378,6 +415,12 @@ public class Fragment5_TourSelection extends FChildActivity implements TMapGpsMa
             showList();
             searchEt.setTextColor(StaticData.WHITE_TEXT_COLOR);
             searchEt.setBackgroundColor(StaticData.MAIN_COLOR);
+
+            View v = getActivity().getCurrentFocus();
+            if(v != null){
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            }
         }
     }
 

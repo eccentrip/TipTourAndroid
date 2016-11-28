@@ -1,6 +1,9 @@
 package mountainq.helloegg.tiptourguide;
 
 import android.app.Application;
+import android.content.Context;
+import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -10,7 +13,6 @@ import java.util.UUID;
 
 import mountainq.helloegg.tiptourguide.data.StaticData;
 import mountainq.helloegg.tiptourguide.interfaces.NetworkService;
-import mountainq.helloegg.tiptourguide.interfaces.TourAPIService;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -37,15 +39,9 @@ public class ApplicationController extends Application {
 
     //통신할 서버의 주소입니다. 클라이언트는 이 주소에 query 또는 path 등을 추가하여 요청합니다.
     private static final String baseUrl = "http://54.245.4.237:3000";
-    private static final String tourUrl = "http://api.visitkorea.or.kr/openapi/service/rest/";
 
     //NetworkService도 마찬가지로 Application을 상속받은 ApplicationController 내에서 관리해주는 것이 좋습니다.
     private NetworkService networkService;
-    private TourAPIService tourAPIService;
-
-    public TourAPIService getTourAPIService() {
-        return tourAPIService;
-    }
 
     public NetworkService getNetworkService() {
         return networkService;
@@ -53,22 +49,33 @@ public class ApplicationController extends Application {
 
     private StaticData mData = StaticData.getInstance();
 
-
     @Override
     public void onCreate() {
         super.onCreate();
+
         /**
          * 어플이 실행되자마자 ApplicationController가 실행됩니다.
          * 자신의 instance를 생성하고 networkService를 만들어줍니다.
          */
+
         Log.i("MyTag", "가장 먼저 실행");
         ApplicationController.instance = this;
         this.buildService();
 
         mData.setDisplayPixels(getApplicationContext());
-        deviceid = UUID.randomUUID().toString();
+        deviceid = getUUID();
 
     }
+
+
+    private String getUUID(){
+        TelephonyManager manager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        String device = "" + manager.getDeviceId();
+        String androidId = "" + android.provider.Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID );
+        UUID uuid = new UUID(androidId.hashCode(), ((long) device.hashCode() <<32));
+        return uuid.toString();
+    }
+
 
     private void buildService() {
 
@@ -107,6 +114,7 @@ public class ApplicationController extends Application {
     }
 
     public String getToken() {
+        if(token == null || token.equals("")) return "";
         return token;
     }
 

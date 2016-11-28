@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import mountainq.helloegg.tiptourguide.R;
 import mountainq.helloegg.tiptourguide.data.StaticData;
 import mountainq.helloegg.tiptourguide.data.TourBoxItem;
+import mountainq.helloegg.tiptourguide.manager.DropManager;
 
 
 /**
@@ -80,12 +81,28 @@ public class TourBoxAdapter extends BaseAdapter {
         /**
          * holder로 꾸미기
          */
+        initTextView(holder.numberText, holder.destinationText, holder.timeText, holder.distanceText, holder.costText);
         holder.numberText.setText(String.valueOf(position+1));
         holder.destinationText.setText(item.getDestination());
-        holder.timeText.setText(String.valueOf(item.getTime()) + "분");
-        holder.distanceText.setText(String.valueOf(item.getDistance()) + "m");
-        holder.costText.setText(String.valueOf(item.getCost()) + "원");
+        holder.timeText.setText(DropManager.calTime(item.getDistance()));
+        holder.distanceText.setText(DropManager.calDistance(item.getDistance()));
+        holder.costText.setText(DropManager.calCost(item.getDistance()));
 
         return v;
+    }
+
+    private void initTextView(
+            TextView number,
+            TextView title,
+            TextView time,
+            TextView distance,
+            TextView cost
+    ){
+
+        number.setLayoutParams(new LinearLayout.LayoutParams(mData.getWidth()/10, ViewGroup.LayoutParams.WRAP_CONTENT));
+        title.setLayoutParams(new LinearLayout.LayoutParams(mData.getWidth()*3/10, ViewGroup.LayoutParams.WRAP_CONTENT));
+        time.setLayoutParams(new LinearLayout.LayoutParams(mData.getWidth()*2/10, ViewGroup.LayoutParams.WRAP_CONTENT));
+        distance.setLayoutParams(new LinearLayout.LayoutParams(mData.getWidth()*2/10, ViewGroup.LayoutParams.WRAP_CONTENT));
+        cost.setLayoutParams(new LinearLayout.LayoutParams(mData.getWidth()*2/10, ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 }

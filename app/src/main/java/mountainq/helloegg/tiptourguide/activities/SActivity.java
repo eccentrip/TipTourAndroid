@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,23 +28,24 @@ public abstract class SActivity extends AppCompatActivity {
 
     protected static final HashMap<String, String> menuHashMap = new HashMap<>();
 
-    public void onCreate(Bundle savedInstanceState, int layout/*, boolean isNav*/) {
+    protected void onCreate(Bundle savedInstanceState, int layout) {
         super.onCreate(savedInstanceState);
+        Log.d("test", "abstract class created");
         setContentView(layout);
-        mContext = this;
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("");
-        setSupportActionBar(toolbar);
-//        fontNanum = Typeface.createFromAsset(getAssets(), "fonts/NanumBarunGothicRegular.ttf");
-
-//        initLayout(getResources().getString(R.string.app_name));
+        if(findViewById(R.id.toolbar) != null){
+            toolbar = (Toolbar) findViewById(R.id.toolbar);
+            toolbar.setTitle("");
+            setSupportActionBar(toolbar);
+        }
     }
 
-    public void setToolbarText(String text){
+    protected void changeToolbarText(String text){
         ((TextView) findViewById(R.id.toolbarText)).setText(text);
     }
 
-    protected void initLayout(String text){
+
+
+    protected void setToolbar(String text){
         backBtn = (ImageView) findViewById(R.id.backBtn);
         backBtn.setVisibility(View.VISIBLE);
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -53,7 +55,6 @@ public abstract class SActivity extends AppCompatActivity {
             }
         });
         toolbarText = (TextView) findViewById(R.id.toolbarText);
-        toolbarText.setTypeface(fontNanum);
         toolbarText.setText(text);
     }
 

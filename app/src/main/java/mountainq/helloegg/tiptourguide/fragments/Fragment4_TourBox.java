@@ -1,5 +1,6 @@
 package mountainq.helloegg.tiptourguide.fragments;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -39,10 +40,12 @@ public class Fragment4_TourBox extends FChildActivity {
 
     NetworkService networkService;
     ApplicationController app;
+    Context context;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("Test", "fragment created");
         app = (ApplicationController) getActivity().getApplicationContext();
         networkService = app.getNetworkService();
     }
@@ -59,22 +62,23 @@ public class Fragment4_TourBox extends FChildActivity {
         return v;
     }
 
+
+
     private void getTourBox(){
 
         Call<ArrayList<TourBoxItem>> newTouBoxList = networkService.newTourBoxList(7);
-
         newTouBoxList.enqueue(new Callback<ArrayList<TourBoxItem>>() {
             @Override
             public void onResponse(Call<ArrayList<TourBoxItem>> call, Response<ArrayList<TourBoxItem>> response) {
                 if(response.isSuccessful()){
                     items = response.body();
                     Log.d("Test", response.body().toString());
-                    adapter = new TourBoxAdapter(items, getActivity());
+                    adapter = new TourBoxAdapter(items, context);
                     tourbox.setAdapter(adapter);
                     Log.d("Test", "adapter is refreshed");
-                    Toast.makeText(getActivity(), "data is received", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "data is received", Toast.LENGTH_SHORT).show();
                 }else {
-                    Toast.makeText(getActivity(), "failed  " + response.code(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "failed  " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -89,7 +93,7 @@ public class Fragment4_TourBox extends FChildActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             final TourBoxItem item = items.get(position);
-            AlertDialog dialog = new AlertDialog.Builder(getActivity())
+            AlertDialog dialog = new AlertDialog.Builder(context)
                     .setTitle("알림")
                     .setMessage("이 내용을 삭제하시겠습니까?")
                     .setMessage(item.toString())

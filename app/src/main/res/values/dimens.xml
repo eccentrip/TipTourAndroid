@@ -7,4 +7,10 @@
     <!-- Dimen for App -->
 
     <dimen name="ActionBarSize">57.5dp</dimen>
+
+    <dimen name="profile_setting_font">14sp</dimen>
+
+    <dimen name="profile_setting_title">16sp</dimen>
+
+    <dimen name="tourselection_textsize">10sp</dimen>
 </resources>

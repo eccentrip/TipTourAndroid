@@ -16,7 +16,7 @@ public class MyTMapView extends TMapView {
     }
 
     public MyTMapView(Context context) {
-        super(context);
+        super(context, null);
     }
 
     public MyTMapView(Context context, int tileType) {
@@ -30,8 +30,4 @@ public class MyTMapView extends TMapView {
     public MyTMapView(Context context, double centerLon, double centerLat, int zoomLevel, int tileType) {
         super(context, centerLon, centerLat, zoomLevel, tileType);
     }
-
-
-
-
 }

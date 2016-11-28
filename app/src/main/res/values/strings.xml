@@ -8,7 +8,7 @@
     <string name="startPoint">출발</string>
     <string name="endPoint">도착</string>
 
-    <string name="time">예상 소요시간</string>
+    <string name="time">소요시간</string>
     <string name="distance">총 거리</string>
     <string name="cost">팁 비용</string>
 
@@ -21,7 +21,7 @@
     <string name="g1_menu3">주변 가이드</string>
     <string name="group2">설정</string>
     <string name="g2_menu1">프로필 설정</string>
-    <string name="g2_menu2">개발 정보</string>
-    <string name="g2_menu3">몰라</string>
+    <string name="g2_menu2">가이드 설정</string>
+    <string name="g2_menu3">어플 버젼</string>
 
 </resources>

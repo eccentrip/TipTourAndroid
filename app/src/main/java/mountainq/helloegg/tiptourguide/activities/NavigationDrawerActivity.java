@@ -17,22 +17,21 @@ import mountainq.helloegg.tiptourguide.interfaces.NavigationDrawer;
  * Created by dnay2 on 2016-11-17.
  */
 
-public class NavigationDrawerActivity extends SActivity implements NavigationDrawer {
+public abstract class NavigationDrawerActivity extends SActivity implements NavigationDrawer {
+
     DrawerLayout mDrawerLayout;
     ActionBarDrawerToggle mDrawerToggle;
     View mDrawerLeft;
     ListView mMenuList;
-
 
     private boolean isDrawerOpen = false;
 
     long pressedTime = 0;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState, R.layout.activity_main);
+    protected void onCreate(Bundle savedInstanceState, int layout) {
+        super.onCreate(savedInstanceState, layout);
         initDrawer();
-
     }
 
     private void initDrawer(){
@@ -69,7 +68,7 @@ public class NavigationDrawerActivity extends SActivity implements NavigationDra
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         // Sync the toggle state after onRestoreInstanceState has occurred.
-        mDrawerToggle.syncState();
+        if(mDrawerToggle != null) mDrawerToggle.syncState();
     }
 
     @Override

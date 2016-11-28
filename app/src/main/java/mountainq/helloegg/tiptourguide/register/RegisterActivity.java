@@ -14,7 +14,7 @@ import android.widget.Toast;
 import mountainq.helloegg.tiptourguide.ApplicationController;
 import mountainq.helloegg.tiptourguide.LoginActivity;
 import mountainq.helloegg.tiptourguide.R;
-import mountainq.helloegg.tiptourguide.data.Content;
+import mountainq.helloegg.tiptourguide.data.User;
 import mountainq.helloegg.tiptourguide.interfaces.NetworkService;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -63,15 +63,15 @@ public class RegisterActivity extends AppCompatActivity {
 //                       Log.e("상익", user_id_email + "   " + user_password);
 //                       startActivity(intent);
                        networkService = ApplicationController.getInstance().getNetworkService();
-                       Content content = new Content();
-                       content.name = name;
-                       content.password = password;
+                       User content = new User();
+                       content.setName(name);
+                       content.setPassword(password);
                        content.setToken(app.getToken());
                        content.setDeviceid(app.getDeviceid());
-                       Call<Content> registerCall = networkService.newContent(content);
-                       registerCall.enqueue(new Callback<Content>() {
+                       Call<User> registerCall = networkService.newContent(content);
+                       registerCall.enqueue(new Callback<User>() {
                            @Override
-                           public void onResponse(Call<Content> call, Response<Content> response) {
+                           public void onResponse(Call<User> call, Response<User> response) {
                                if (response.isSuccessful()) {
                                    Toast.makeText(RegisterActivity.this, "회원가입이 완료되었습니다! 다시 로그인 해주세요!", Toast.LENGTH_SHORT).show();
 
@@ -84,7 +84,7 @@ public class RegisterActivity extends AppCompatActivity {
                            }
 
                            @Override
-                           public void onFailure(Call<Content> call, Throwable t) {
+                           public void onFailure(Call<User> call, Throwable t) {
 
                            }
                        });
