@@ -82,6 +82,8 @@ public class GuideListActivity extends SActivity {
             @Override
             public void onResponse(Call<BooleanData> call, Response<BooleanData> response) {
                 LOG.ERROR(response.body()+"");
+                LOG.ERROR("pushToTourist error : " + response.body() +"\nToken : " + app.getToken());
+
                 Toast.makeText(mContext, guide.getName() + "님에게 가이드 요청을 보냈습니다. 잠시만 기다려주세요", Toast.LENGTH_SHORT).show();
                 finish();
 

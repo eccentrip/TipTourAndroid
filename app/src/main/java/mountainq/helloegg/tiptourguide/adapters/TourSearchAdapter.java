@@ -5,8 +5,11 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -50,17 +53,20 @@ public class TourSearchAdapter extends BaseAdapter/** implements Filterable*/ {
 
     private class ViewHolder{
         TextView nameText;
+        ImageView firstImgView;
         LinearLayout itembg;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
         View v = convertView;
         ViewHolder holder;
         if(v == null){
             v = View.inflate(context, R.layout.fragment_tourselection_item, null);
             holder = new ViewHolder();
             holder.nameText = (TextView) v.findViewById(R.id.itemText);
+            holder.firstImgView = (ImageView) v.findViewById(R.id.itemImg);
             holder.itembg = (LinearLayout) v.findViewById(R.id.itembg);
             v.setTag(holder);
         } else {
@@ -70,13 +76,21 @@ public class TourSearchAdapter extends BaseAdapter/** implements Filterable*/ {
         LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mData.getHeight()/10);
         holder.itembg.setLayoutParams(llp);
         holder.itembg.setGravity(Gravity.CENTER);
+        holder.itembg.setPadding(10,10,10,10);
         /**
          * 홀더의 내용으로 꾸미기
          */
 
         SearchKeyword item = items.get(position);
         holder.nameText.setText(item.getTitle());
-
+        llp = new LinearLayout.LayoutParams(mData.getHeight()/13, mData.getHeight()/13);
+        holder.firstImgView.setLayoutParams(llp);
+        Picasso.with(context)
+                .load(item.getFirstImgUrl())
+                .placeholder(R.drawable.location_me)
+                .error(R.mipmap.ic_launcher)
+                .fit()
+                .into(holder.firstImgView);
 
         return v;
     }

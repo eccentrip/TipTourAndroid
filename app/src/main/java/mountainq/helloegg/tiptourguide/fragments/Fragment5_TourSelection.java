@@ -268,7 +268,7 @@ public class Fragment5_TourSelection extends FChildActivity implements TMapGpsMa
             showTmap();
             showBottomSheet();
             startPointText.setText("내위치");
-            startPoint = new SearchKeyword(/*String.valueOf(lon), String.valueOf(lat),*/"37.568477", "126.981611", "내 위치");
+            startPoint = new SearchKeyword(/*String.valueOf(lon), String.valueOf(lat),*/"37.568477", "126.981611", "내 위치", "");
             endPoint = new SearchKeyword(items.get(position));
             drawStratToEnd(startPoint, endPoint);
             endPointText.setText(endPoint.getTitle());

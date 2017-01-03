@@ -5,7 +5,6 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,7 +29,7 @@ public abstract class SActivity extends AppCompatActivity {
 
     protected void onCreate(Bundle savedInstanceState, int layout) {
         super.onCreate(savedInstanceState);
-        Log.d("test", "abstract class created");
+//        Log.d("test", "abstract class created");
         setContentView(layout);
         if(findViewById(R.id.toolbar) != null){
             toolbar = (Toolbar) findViewById(R.id.toolbar);

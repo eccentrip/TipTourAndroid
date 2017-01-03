@@ -4,12 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
+    android:background="@color/mainColor"
     android:orientation="vertical"
     tools:context=".SplashActivity">
     <TextView
         android:layout_marginTop="30dp"
         android:text="팁 투어 가이드"
-        android:textSize="14sp"
+        android:textColor="@color/whiteText"
+        android:textSize="24sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

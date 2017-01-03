@@ -79,7 +79,7 @@ public class TourBoxActivity extends SActivity {
     }
 
     private void getTourBox(){
-        Call<ArrayList<TourBoxItem>> newTouBoxList = networkService.newTourBoxList(app.user_id);
+        Call<ArrayList<TourBoxItem>> newTouBoxList = networkService.newTourBoxList(mData.getUserId());
         newTouBoxList.enqueue(new Callback<ArrayList<TourBoxItem>>() {
             @Override
             public void onResponse(Call<ArrayList<TourBoxItem>> call, Response<ArrayList<TourBoxItem>> response) {

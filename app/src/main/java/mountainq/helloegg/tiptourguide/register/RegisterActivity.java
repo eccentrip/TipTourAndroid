@@ -67,7 +67,7 @@ public class RegisterActivity extends AppCompatActivity {
                        content.setName(name);
                        content.setPassword(password);
                        content.setToken(app.getToken());
-                       content.setDeviceid(app.getDeviceid());
+//                       content.setDeviceid(app.getDeviceid());
                        Call<User> registerCall = networkService.newContent(content);
                        registerCall.enqueue(new Callback<User>() {
                            @Override

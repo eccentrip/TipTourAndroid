@@ -5,14 +5,18 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 import mountainq.helloegg.tiptourguide.R;
 import mountainq.helloegg.tiptourguide.data.Guide;
 import mountainq.helloegg.tiptourguide.data.StaticData;
+import mountainq.helloegg.tiptourguide.manager.BitmapCircleTransform;
 
 /**
  * Created by dnay2 on 2016-11-26.
@@ -48,6 +52,7 @@ public class GuideListAdapter extends BaseAdapter {
     }
 
     private class ViewHolder{
+        ImageView profileImg;
         TextView nameText;
         TextView descriptionText;
         TextView scoreText;
@@ -62,6 +67,7 @@ public class GuideListAdapter extends BaseAdapter {
         if(v == null){
             v = View.inflate(context, R.layout.activity_guidelist_item, null);
             holder = new ViewHolder();
+            holder.profileImg = (ImageView) v.findViewById(R.id.profileImg);
             holder.nameText = (TextView) v.findViewById(R.id.name);
             holder.descriptionText = (TextView) v.findViewById(R.id.description);
             holder.scoreText = (TextView) v.findViewById(R.id.score);
@@ -71,9 +77,10 @@ public class GuideListAdapter extends BaseAdapter {
             holder = (ViewHolder) v.getTag();
         }
 
-        LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mData.getHeight()/10);
+        LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mData.getHeight()/8);
         holder.itembg.setLayoutParams(llp);
         holder.itembg.setGravity(Gravity.CENTER);
+        holder.itembg.setPadding(10,10,10,10);
         /**
          * 홀더의 내용으로 꾸미기
          */
@@ -82,7 +89,17 @@ public class GuideListAdapter extends BaseAdapter {
         holder.nameText.setText(item.getName());
         holder.descriptionText.setText(item.getDescription());
         holder.scoreText.setText(String.valueOf(item.getScore()));
+        llp = new LinearLayout.LayoutParams(mData.getHeight()/15, mData.getHeight()/15);
+        holder.profileImg.setLayoutParams(llp);
+        holder.profileImg.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 
+        Picasso.with(context)
+                .load("http://tong.visitkorea.or.kr/cms/resource/22/1583322_image2_1.jpg")
+                .placeholder(R.drawable.location_me)
+                .error(R.mipmap.ic_launcher)
+                .transform(new BitmapCircleTransform())
+                .fit()
+                .into(holder.profileImg);
 
         return v;
     }

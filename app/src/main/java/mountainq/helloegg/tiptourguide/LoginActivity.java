@@ -71,6 +71,7 @@ public class LoginActivity extends SActivity {
 
         networkService = ApplicationController.getInstance().getNetworkService();
         app = (ApplicationController) getApplicationContext();
+//        app.getUUID();
 
         Intent intent = getIntent();
         String code = intent.getStringExtra("code");
@@ -110,7 +111,7 @@ public class LoginActivity extends SActivity {
         Log.e("sangik", name + "  " + password);
         loggingin.setName(name);
         loggingin.setPassword(password);
-        loggingin.setDeviceid(app.getDeviceid());
+//        loggingin.setDeviceid(app.getDeviceid());
         loggingin.setToken(sharedPreferences.getPushToken());
 
         Call<User> loginCall = networkService.newThumbnail(loggingin);
@@ -124,6 +125,7 @@ public class LoginActivity extends SActivity {
 
                     app.user_id = tempContent.getId();
                     mData.setUserId(tempContent.getId());
+                    sharedPreferences.setUserIdx(tempContent.getId());
 
                     Log.i("MyTag", "유저아이디 제데로 넘어왓나요: " + app.user_id + "  ");
                     Intent i = new Intent(getApplicationContext(),
@@ -163,11 +165,12 @@ public class LoginActivity extends SActivity {
 
     private void showRegisterNotification(){
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-
+        Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.location_me);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_stat_name)
-                .setContentTitle("[알림]")
-                .setContentText("축하드립니다.")
+                .setSmallIcon(R.drawable.ic_stat_name) //작은 아이콘, status bar 스와이프 전에 상단에서 보여줄 그림
+                .setLargeIcon(largeIcon) //큰 아이콘 크게 보여준다.
+                .setContentTitle("[알림]") //타이틀
+                .setContentText("축하드립니다.") // 내용
                 .setAutoCancel(true)
                 .setShowWhen(true)
                 .setWhen(System.currentTimeMillis())

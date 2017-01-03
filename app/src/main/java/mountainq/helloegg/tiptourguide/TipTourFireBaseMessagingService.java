@@ -74,7 +74,7 @@ public class TipTourFireBaseMessagingService extends FirebaseMessagingService {
                 break;
         }
 
-        icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+        icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_notice_alarm);
 
         //알람소리
         defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
@@ -95,9 +95,8 @@ public class TipTourFireBaseMessagingService extends FirebaseMessagingService {
 
     private NotificationCompat.Builder buildSimpleNotification(String code, String idx, String title, String message) {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
-        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_stat_name)
+                .setSmallIcon(R.drawable.ic_notice_alarm)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setAutoCancel(true)
@@ -112,7 +111,7 @@ public class TipTourFireBaseMessagingService extends FirebaseMessagingService {
                     .setPriority(Notification.PRIORITY_HIGH)
                     .setVisibility(Notification.VISIBILITY_PUBLIC)
                     .setColor(StaticData.MAIN_COLOR)
-                    .setSmallIcon(R.drawable.ic_stat_name);
+                    .setSmallIcon(R.drawable.ic_notice_alarm);
 
         }
         return builder;
@@ -126,7 +125,7 @@ public class TipTourFireBaseMessagingService extends FirebaseMessagingService {
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setContent(remoteViews)
-                .setSmallIcon(R.drawable.ic_stat_name)
+                .setSmallIcon(R.drawable.ic_notice_alarm)
                 .setAutoCancel(true)
                 .setWhen(System.currentTimeMillis())
                 .setShowWhen(true)

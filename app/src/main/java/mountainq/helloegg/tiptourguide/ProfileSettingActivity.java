@@ -78,6 +78,7 @@ public class ProfileSettingActivity extends SActivity {
                         sharedPregerences.setAutoLogin(-1);
                         Intent intent = new Intent(context, LoginActivity.class);
                         startActivity(intent);
+                        MainActivity.mainActivity.finish();
                         finish();
                     }
                     break;

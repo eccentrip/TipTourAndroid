@@ -39,6 +39,7 @@ public class StaticData {
     }
 
 
+
     private static final String SERVICE_KEY = "kKxwGFgF3Nl%2FYmNPy7fLIoEbzMhhtrH1THy1IvcHm6yxia1I%2BhtyivenbGNWHGYanSNrtSXioCZpBdUlZkNW4Q%3D%3D";
     private static final String MOBILE_OS = "AND";
     private static final String CONTENT_TYPE_ID = "12";
@@ -64,8 +65,21 @@ public class StaticData {
     /**
      * DummyData
      */
-    public static final double DUMMY_LON = 37.568477;
-    public static final double DUMMY_LAT = 126.981611;
+    public static final double DUMMY_LON = 126.981611;
+    public static final double DUMMY_LAT = 37.568477;
+
+    public static final double DUMMY_START_X = 126.9926031738;
+    public static final double DUMMY_START_Y = 37.5628438177;
+
+    public static final double DUMMY_END_X = 126.9997414083;
+    public static final double DUMMY_END_Y = 37.5629828186;
+
+    public static final double TEST_START_X = 126.960358;
+    public static final double TEST_START_Y = 37.466963;
+
+    public static final double TEST_END_X = 126.948138;
+    public static final double TEST_END_Y = 37.461643;
+
 
     /**
      * 보내야 될 데이터 잠시 저장

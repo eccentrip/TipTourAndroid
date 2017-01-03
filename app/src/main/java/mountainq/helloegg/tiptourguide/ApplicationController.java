@@ -1,15 +1,10 @@
 package mountainq.helloegg.tiptourguide;
 
 import android.app.Application;
-import android.content.Context;
-import android.provider.Settings;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import java.util.UUID;
 
 import mountainq.helloegg.tiptourguide.data.StaticData;
 import mountainq.helloegg.tiptourguide.interfaces.NetworkService;
@@ -63,18 +58,17 @@ public class ApplicationController extends Application {
         this.buildService();
 
         mData.setDisplayPixels(getApplicationContext());
-        deviceid = getUUID();
 
     }
 
 
-    private String getUUID(){
-        TelephonyManager manager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        String device = "" + manager.getDeviceId();
-        String androidId = "" + android.provider.Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID );
-        UUID uuid = new UUID(androidId.hashCode(), ((long) device.hashCode() <<32));
-        return uuid.toString();
-    }
+//    public void getUUID(){
+//        TelephonyManager manager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+//        String device = "" + manager.getDeviceId();
+//        String androidId = "" + android.provider.Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID );
+//        UUID uuid = new UUID(androidId.hashCode(), ((long) device.hashCode() <<32));
+//        deviceid =  uuid.toString();
+//    }
 
 
     private void buildService() {
@@ -120,5 +114,9 @@ public class ApplicationController extends Application {
 
     public String getDeviceid() {
         return deviceid;
+    }
+
+    public void setDeviceid(String deviceid) {
+        this.deviceid = deviceid;
     }
 }

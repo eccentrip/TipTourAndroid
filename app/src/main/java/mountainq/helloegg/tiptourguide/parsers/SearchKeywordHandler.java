@@ -33,6 +33,9 @@ public class SearchKeywordHandler extends DefaultHandler {
             case "title":
                 item.setTitle(data);
                 break;
+            case "firstimage":
+                item.setFirstImgUrl(data);
+                break;
         }
         tagName = "";
     }

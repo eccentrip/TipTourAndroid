@@ -6,6 +6,6 @@
     </item>
     <item>
         <bitmap android:src="@drawable/ic_action_name"
-            android:tint="@color/darkGrayText"/>
+            android:tint="@color/startPoint"/>
     </item>
 </selector>

@@ -3,11 +3,18 @@ package mountainq.helloegg.tiptourguide;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,8 +25,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -49,13 +56,14 @@ import mountainq.helloegg.tiptourguide.data.TourBoxItem;
 import mountainq.helloegg.tiptourguide.interfaces.NetworkService;
 import mountainq.helloegg.tiptourguide.manager.DropManager;
 import mountainq.helloegg.tiptourguide.manager.LOG;
+import mountainq.helloegg.tiptourguide.manager.TestManager;
 import mountainq.helloegg.tiptourguide.parsers.SearchKeySAXParser;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class MainActivity extends NavigationDrawerActivity implements TMapGpsManager.onLocationChangedCallback {
+public class MainActivity extends NavigationDrawerActivity implements LocationListener, TMapGpsManager.onLocationChangedCallback {
     private StaticData mData = StaticData.getInstance();
 
     //UI
@@ -64,7 +72,7 @@ public class MainActivity extends NavigationDrawerActivity implements TMapGpsMan
     private EditText searchEt;
     ImageView searchBtn;
     private RelativeLayout tMapLayout;
-    FrameLayout mapFrame;
+
 
     //BottomSheet
     private RelativeLayout bottomSheet;
@@ -82,20 +90,100 @@ public class MainActivity extends NavigationDrawerActivity implements TMapGpsMan
     ApplicationController app;
     NetworkService networkService;
     TMapGpsManager gps = null;
+    private LocationManager locationManager;
     private boolean isMapVisible = true;
     private boolean isBottomSheetVisible = true;
     double lon, lat;
     String code = "", idx = "";
 
+    EditText console;
+    ImageView goMe;
+
+    public static MainActivity mainActivity;
+
+
+    private void checkGPS() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission_group.LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            LOG.DEBUG("권한이 없네");
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) ||
+                    ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+//                Toast.makeText(SplashActivity.this, "효율적인 서비스 이용을 위해 GPS 등의 정보에 대한 권한이 필요합니다.", Toast.LENGTH_SHORT).show();
+                LOG.DEBUG("권한 취소 했니");
+                ActivityCompat.requestPermissions(this, new String[]{
+                        android.Manifest.permission.ACCESS_FINE_LOCATION
+                }, 100);
+
+            } else {
+                LOG.DEBUG("권한 좀 해줄래?");
+                ActivityCompat.requestPermissions(this, new String[]{
+                        android.Manifest.permission.ACCESS_FINE_LOCATION
+                }, 100);
+            }
+        } else {
+            //권한이 있음을 확인한 경우
+            LOG.DEBUG("permissions : OK");
+            setLocationManager();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 100:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        ) {
+                    LOG.DEBUG("permission name ; " + permissions[0] + "  value : " + grantResults[0]);
+                    setLocationManager();
+                    LOG.DEBUG("permissions : OK 동의 선택");
+                } else {
+                    LOG.DEBUG("permission name : " + permissions[0] + "   value : " + grantResults[0]);
+                    LOG.toast(mContext, "GPS가 작동하지 않습니다.");
+                    LOG.DEBUG("permissions : NO 선택 안함");
+                }
+                break;
+        }
+    }
+
+    private void setLocationManager() {
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        try {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5, this);
+//            Toast.makeText(mContext, "로케이션 매니져가 생성되었슴", Toast.LENGTH_SHORT).show();
+        } catch (SecurityException e) {
+            e.printStackTrace();
+            LOG.ERROR("location manager is not working \n" + e.getMessage());
+            checkGPS();
+        }
+    }
+
+    private void GOME() {
+        if (tMapView != null) {
+            tMapView.setLocationPoint(lon, lat);
+            tMapView.setCenterPoint(lon, lat);
+            tMapView.setZoomLevel(13);
+//            drawStratToEnd(
+//                    new SearchKeyword(StaticData.DUMMY_START_X, StaticData.DUMMY_START_Y),
+//                    new SearchKeyword(StaticData.DUMMY_END_X, StaticData.DUMMY_END_Y)
+//            );
+        } else {
+            createTmap(this);
+        }
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState, R.layout.activity_main);
-
+        console = (EditText) findViewById(R.id.console);
         tMapLayout = (RelativeLayout) findViewById(R.id.relative_map);
         mContext = this;
         app = (ApplicationController) getApplicationContext();
         networkService = app.getNetworkService();
+        setLocationManager();
 
+
+        mainActivity = this;
         /**
          * 푸시 데이터 받아오기
          */
@@ -117,8 +205,6 @@ public class MainActivity extends NavigationDrawerActivity implements TMapGpsMan
             }
         }
         initialize();
-        createTmap(this);
-//        drawPoint(new SearchKeyword(String.valueOf(StaticData.DUMMY_LON + 0.000023),String.valueOf(StaticData.DUMMY_LAT+0.000023),"sample"));
     }
 
     /**
@@ -176,7 +262,7 @@ public class MainActivity extends NavigationDrawerActivity implements TMapGpsMan
         RelativeLayout.LayoutParams llp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mData.getHeight() / 4);
         bottomSheet = (RelativeLayout) findViewById(R.id.bottom);
         bottomSheet.setLayoutParams(llp);
-        mapFrame = (FrameLayout) findViewById(R.id.mapFrame);
+
 
         saveBtn = (Button) findViewById(R.id.saveBtn);
         saveBtn.setOnClickListener(onSaveBtnClickListener);
@@ -206,13 +292,25 @@ public class MainActivity extends NavigationDrawerActivity implements TMapGpsMan
         searchList.setAdapter(searchAdapter);
         searchList.setOnItemClickListener(searchItemClickLIstener);
 
+        goMe = (ImageView) findViewById(R.id.goMe);
+        goMe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GOME();
+            }
+        });
         gps = new TMapGpsManager(this);
         gps.setMinTime(1000);
         gps.setMinDistance(5);
         gps.setProvider(TMapGpsManager.GPS_PROVIDER);
         gps.OpenGps();
+//        lon = gps.getLocation().getLongitude();
+//        lat = gps.getLocation().getLatitude();
 
-//        createTmap();
+        lon = TestManager.MY_LOCATION_X;
+        lat = TestManager.MY_LOCATION_Y;
+
+        createTmap(this);
     }
 
     /**
@@ -222,42 +320,71 @@ public class MainActivity extends NavigationDrawerActivity implements TMapGpsMan
      */
     @Override
     public void onLocationChange(Location location) {
-        lat = location.getLatitude();
-        lon = location.getLongitude();
+//        lat = location.getLatitude();
+//        lon = location.getLongitude();
+        lon = TestManager.MY_LOCATION_X;
+        lat = TestManager.MY_LOCATION_Y;
+        LOG.DEBUG("location change : lat = " + lat + "  lon = " + lon);
+        console.setText("lat = " + lat + "  lon = " + lon);
     }
 
+
+    @Override
+    public void onLocationChanged(Location location) {
+//        lon = location.getLongitude();
+//        lat = location.getLatitude();
+//        LOG.DEBUG("location change : lat = " + lat + "  lon = " + lon);
+//        console.setText("lat = " + lat + "  lon = " + lon);
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
 
     /**
      * Tmap 을 생성하는 메소드 모아놓음
      */
     private void createTmap(Context context) {
 
+        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.location_me);
         try {
             LOG.DEBUG("this : " + context.toString() + " tMap is created");
             tMapView = new TMapView(context);
             tMapLayout.addView(tMapView);
 
-        } catch (NullPointerException e) {
-            LOG.ERROR(e.getMessage());
-            e.printStackTrace();
-        }
-        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.location_me);
-        if (tMapView != null) {
             tMapView.setSKPMapApiKey("5f0bdfc2-2f1f-365a-9a25-e49f12151a82");
             tMapView.setLanguage(TMapView.LANGUAGE_KOREAN);
             tMapView.setIconVisibility(true);
-            tMapView.setZoomLevel(7);
+            tMapView.setZoomLevel(15);
             tMapView.setMapType(TMapView.MAPTYPE_STANDARD);
             tMapView.setCompassMode(false);
             tMapView.setTrackingMode(true);
             tMapView.setIcon(icon);
+            tMapView.setCenterPoint(lon, lat);
             tMapView.setLocationPoint(lon, lat);
 //            tMapView.setLocationPoint(StaticData.DUMMY_LON, StaticData.DUMMY_LAT); //dummy data
+
+        } catch (NullPointerException e) {
+            LOG.ERROR(e.getMessage());
+            e.printStackTrace();
         }
+
+
     }
 
     double distance = 0.0;
-
 
     /**
      * 두 지점을 연결해서 길로 이어주는 메소드
@@ -268,22 +395,28 @@ public class MainActivity extends NavigationDrawerActivity implements TMapGpsMan
      */
     private double drawStratToEnd(SearchKeyword start, SearchKeyword end) {
         LOG.DEBUG("go to start " + start.toString() + " end" + end.toString());
+        tMapView.removeAllTMapPolyLine();
         double dist = 0.0f;
-        double startX = start.getMapx();
-        double startY = start.getMapy();
+        final double startX = start.getMapx();
+        final double startY = start.getMapy();
         double endX = end.getMapx();
         double endY = end.getMapy();
 
-        final TMapData tMapData = new TMapData();
-        final TMapPoint startPoint = new TMapPoint(startX, startY);
+        TMapData tMapData = new TMapData();
+        final TMapPoint startPoint = new TMapPoint(startY, startX);
         final TMapPoint endPoint = new TMapPoint(endY, endX);
 
         tMapData.findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH, startPoint, endPoint, new TMapData.FindPathDataListenerCallback() {
             @Override
             public void onFindPathData(TMapPolyLine tMapPolyLine) {
-                LOG.DEBUG("poly line is created");
+                tMapPolyLine.setLineColor(Color.RED);
+                tMapPolyLine.setLineWidth(10);
+//                tMapView.addTMapPolyLine("test", tMapPolyLine);
                 tMapView.addTMapPath(tMapPolyLine);
+                LOG.DEBUG("poly line is created : " + tMapPolyLine.toString()
+                        + "\n distance : " + tMapPolyLine.getDistance());
                 tMapView.setZoomLevel(15);
+                tMapView.setCenterPoint(startX, startY);
                 distance = tMapPolyLine.getDistance();
                 runOnUiThread(new Runnable() {
                     @Override
@@ -304,7 +437,7 @@ public class MainActivity extends NavigationDrawerActivity implements TMapGpsMan
      * @param point 지점을 넣는다.
      */
     private void drawPoint(SearchKeyword point) {
-        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+        Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.ic_location_here);
         TMapPoint tMapPoint = new TMapPoint(point.getMapy(), point.getMapx());
         TMapMarkerItem marker = new TMapMarkerItem();
         marker.setTMapPoint(tMapPoint);
@@ -352,8 +485,8 @@ public class MainActivity extends NavigationDrawerActivity implements TMapGpsMan
             showTmap();
             showBottomSheet();
             startPointText.setText("내위치");
-            startPoint = new SearchKeyword(String.valueOf(lon), String.valueOf(lat), "내 위치");
-//            startPoint = new SearchKeyword("37.568477", "126.981611", "내 위치");
+            startPoint = new SearchKeyword(String.valueOf(lon), String.valueOf(lat), "내 위치", "");
+//            startPoint = new SearchKeyword("37.568477", "126.981611", "내 위치","");
             endPoint = new SearchKeyword(items.get(position));
             drawStratToEnd(startPoint, endPoint);
 //            drawPoint(endPoint);
@@ -413,6 +546,7 @@ public class MainActivity extends NavigationDrawerActivity implements TMapGpsMan
     private void ConnectTourGuide() {
         Intent intent = new Intent(MainActivity.this, GuideListActivity.class);
         startActivity(intent);
+//        showAlertDialogue();
     }
 
     @Override
@@ -453,6 +587,46 @@ public class MainActivity extends NavigationDrawerActivity implements TMapGpsMan
         });
     }
 
+//    private void showAlertDialogue() {
+//        LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mData.getHeight() / 3);
+//        View contentView = View.inflate(mContext, R.layout.fragment_tourselection_guide_bottom, null);
+////                    contentView.setLayoutParams(llp);
+//        LinearLayout rl = ((LinearLayout) contentView.findViewById(R.id.bottomGuide));
+//        rl.setBackgroundColor(Color.WHITE);
+//        rl.setLayoutParams(llp);
+//        ((TextView) contentView.findViewById(R.id.startPointText2)).setText("내 위치");
+//        ((TextView) contentView.findViewById(R.id.endPointText2)).setText("경복궁");
+//        ((TextView) contentView.findViewById(R.id.timeText2)).setText("15분");
+//        ((TextView) contentView.findViewById(R.id.distanceText2)).setText("1km");
+//        ((TextView) contentView.findViewById(R.id.costText2)).setText("1500원");
+//
+//
+//        AlertDialog dialog = new AlertDialog.Builder(mContext)
+//                .setTitle("가이드를 받으시겠습니까?")
+//                .setNegativeButton("안할래요", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        Toast.makeText(mContext, "거절되었습니다.", Toast.LENGTH_SHORT).show();
+//                        dialog.dismiss();
+//                        tMapView.removeAllTMapPolyLine();
+//                    }
+//                })
+//                .setPositiveButton("할래요", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        Toast.makeText(mContext, "수락되었습니다.", Toast.LENGTH_SHORT).show();
+//                        dialog.dismiss();
+//                        //투어리스트 위치 보여주기
+////                        drawPoint(startPoint);
+//                    }
+//                })
+//                .setView(contentView)
+//                .create();
+//
+//
+//        dialog.show();
+//    }
+
 
     /**
      * 여행정보를 가져오며 가이드에게 묻는 알람 화면을 띄운다
@@ -469,24 +643,31 @@ public class MainActivity extends NavigationDrawerActivity implements TMapGpsMan
                     final PushDatas pushToGuide = response.body();
                     LOG.DEBUG(pushToGuide.toString());
                     LOG.DEBUG(response.body().toString());
-                    final SearchKeyword startPoint = new SearchKeyword(pushToGuide.getStartPointX(), pushToGuide.getStartPointY(), pushToGuide.getStartTitle());
-                    SearchKeyword endPoint = new SearchKeyword(pushToGuide.getEndPointX(), pushToGuide.getEndPointY(), pushToGuide.getEndTitle());
+                    final SearchKeyword startPoint = new SearchKeyword(pushToGuide.getStartPointX(), pushToGuide.getStartPointY(), pushToGuide.getStartTitle(), "");
+                    final SearchKeyword endPoint = new SearchKeyword(pushToGuide.getEndPointX(), pushToGuide.getEndPointY(), pushToGuide.getEndTitle(), "");
+                    final int touristId = pushToGuide.getTouristid();
+                    final int tourId = pushToGuide.getId();
 
                     double dist = drawStratToEnd(startPoint, endPoint);
 
+                    LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, mData.getHeight() / 3);
                     View contentView = View.inflate(mContext, R.layout.fragment_tourselection_guide_bottom, null);
+                    LinearLayout rl = ((LinearLayout) contentView.findViewById(R.id.bottomGuide));
+                    rl.setBackgroundColor(Color.WHITE);
+                    rl.setLayoutParams(llp);
                     ((TextView) contentView.findViewById(R.id.startPointText2)).setText(pushToGuide.getStartTitle());
                     ((TextView) contentView.findViewById(R.id.endPointText2)).setText(pushToGuide.getEndTitle());
                     ((TextView) contentView.findViewById(R.id.timeText2)).setText(DropManager.calTime(dist));
                     ((TextView) contentView.findViewById(R.id.distanceText2)).setText(DropManager.calDistance(dist));
                     ((TextView) contentView.findViewById(R.id.costText2)).setText(DropManager.calCost(dist));
+
                     LOG.ERROR(pushToGuide.toString());
                     AlertDialog dialog = new AlertDialog.Builder(mContext)
                             .setTitle("가이드를 받으시겠습니까?")
                             .setNegativeButton("안할래요", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    pushToTourist(false, pushToGuide.getTouristid(), pushToGuide.getId());
+                                    pushToTourist(false, touristId, tourId);
                                     Toast.makeText(mContext, "거절되었습니다.", Toast.LENGTH_SHORT).show();
                                     dialog.dismiss();
                                     tMapView.removeAllTMapPolyLine();
@@ -495,11 +676,12 @@ public class MainActivity extends NavigationDrawerActivity implements TMapGpsMan
                             .setPositiveButton("할래요", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    pushToTourist(true, pushToGuide.getTouristid(), pushToGuide.getId());
+                                    pushToTourist(true, touristId, tourId);
 //                                    Toast.makeText(mContext, "수락되었습니다.", Toast.LENGTH_SHORT).show();
                                     dialog.dismiss();
                                     //투어리스트 위치 보여주기
                                     drawPoint(startPoint);
+                                    tMapView.setCenterPoint(startPoint.getMapx(), startPoint.getMapy());
                                 }
                             })
                             .setView(contentView)
@@ -520,21 +702,23 @@ public class MainActivity extends NavigationDrawerActivity implements TMapGpsMan
     private void pushToTourist(boolean isAgree, int touristid, int tourid) {
 
         PushGuideToTourist item = null;
-        if (isAgree) item = new PushGuideToTourist(touristid, Integer.parseInt(StaticData.CUSTOMER_YES), tourid);
-        else item = new PushGuideToTourist(touristid, Integer.parseInt(StaticData.CUSTOMER_NO), tourid);
+        if (isAgree)
+            item = new PushGuideToTourist(touristid, Integer.parseInt(StaticData.CUSTOMER_YES), tourid);
+        else
+            item = new PushGuideToTourist(touristid, Integer.parseInt(StaticData.CUSTOMER_NO), tourid);
         LOG.ERROR("pusht to tourist item : " + item.toString());
         Call<BooleanData> pushGuideToTourist = networkService.pushToTourist(item);
         pushGuideToTourist.enqueue(new Callback<BooleanData>() {
             @Override
             public void onResponse(Call<BooleanData> call, Response<BooleanData> response) {
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
 
                 }
             }
 
             @Override
             public void onFailure(Call<BooleanData> call, Throwable t) {
-                LOG.ERROR(t.getMessage());
+                LOG.ERROR("pushToTourist error : " + t.getMessage() + "\nToken : " + app.getToken());
             }
         });
     }
@@ -551,11 +735,11 @@ public class MainActivity extends NavigationDrawerActivity implements TMapGpsMan
         pushDatasCall.enqueue(new Callback<PushDatas>() {
             @Override
             public void onResponse(Call<PushDatas> call, Response<PushDatas> response) {
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     tMapView.removeAllTMapPolyLine();
                     PushDatas result = response.body();
-                    SearchKeyword startPoint = new SearchKeyword(result.getStartPointX(), result.getStartPointY(), result.getStartTitle());
-                    SearchKeyword endPoint = new SearchKeyword(result.getEndPointX(), result.getEndPointY(), result.getEndTitle());
+                    SearchKeyword startPoint = new SearchKeyword(result.getStartPointX(), result.getStartPointY(), result.getStartTitle(), "");
+                    SearchKeyword endPoint = new SearchKeyword(result.getEndPointX(), result.getEndPointY(), result.getEndTitle(), "");
                     drawStratToEnd(startPoint, endPoint);
 
                 }
@@ -595,12 +779,12 @@ public class MainActivity extends NavigationDrawerActivity implements TMapGpsMan
         dialog.show();
     }
 
-    private void moveGuideListActivity(int idx){
+    private void moveGuideListActivity(int idx) {
         Call<PushDatas> pushDatasCall = networkService.getGuidePushData(idx);
         pushDatasCall.enqueue(new Callback<PushDatas>() {
             @Override
             public void onResponse(Call<PushDatas> call, Response<PushDatas> response) {
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     mData.setTempPushDatas(response.body());
                     ConnectTourGuide();
                 }
@@ -616,7 +800,7 @@ public class MainActivity extends NavigationDrawerActivity implements TMapGpsMan
 
 
     /**
-    * 데이터 통신 관광 API로부터 관광지 정보를 받아와 리스트로 출력한다.
+     * 데이터 통신 관광 API로부터 관광지 정보를 받아와 리스트로 출력한다.
      */
     class SearchTask extends AsyncTask<String, Integer, Void> {
 
