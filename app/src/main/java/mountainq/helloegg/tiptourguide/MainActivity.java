@@ -56,7 +56,6 @@ import mountainq.helloegg.tiptourguide.data.TourBoxItem;
 import mountainq.helloegg.tiptourguide.interfaces.NetworkService;
 import mountainq.helloegg.tiptourguide.manager.DropManager;
 import mountainq.helloegg.tiptourguide.manager.LOG;
-import mountainq.helloegg.tiptourguide.manager.TestManager;
 import mountainq.helloegg.tiptourguide.parsers.SearchKeySAXParser;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -304,11 +303,11 @@ public class MainActivity extends NavigationDrawerActivity implements LocationLi
         gps.setMinDistance(5);
         gps.setProvider(TMapGpsManager.GPS_PROVIDER);
         gps.OpenGps();
-//        lon = gps.getLocation().getLongitude();
-//        lat = gps.getLocation().getLatitude();
+        lon = gps.getLocation().getLongitude();
+        lat = gps.getLocation().getLatitude();
 
-        lon = TestManager.MY_LOCATION_X;
-        lat = TestManager.MY_LOCATION_Y;
+//        lon = TestManager.MY_LOCATION_X;
+//        lat = TestManager.MY_LOCATION_Y;
 
         createTmap(this);
     }
@@ -320,10 +319,10 @@ public class MainActivity extends NavigationDrawerActivity implements LocationLi
      */
     @Override
     public void onLocationChange(Location location) {
-//        lat = location.getLatitude();
-//        lon = location.getLongitude();
-        lon = TestManager.MY_LOCATION_X;
-        lat = TestManager.MY_LOCATION_Y;
+        lat = location.getLatitude();
+        lon = location.getLongitude();
+//        lon = TestManager.MY_LOCATION_X;
+//        lat = TestManager.MY_LOCATION_Y;
         LOG.DEBUG("location change : lat = " + lat + "  lon = " + lon);
         console.setText("lat = " + lat + "  lon = " + lon);
     }
